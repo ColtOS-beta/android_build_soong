@@ -121,20 +121,15 @@ func (lto *lto) flags(ctx BaseModuleContext, flags Flags) Flags {
 			flags.Local.LdFlags = append(flags.Local.LdFlags, cachePolicyFormat+policy)
 		}
 
-		// If the module does not have a profile, be conservative and limit cross TU inline
-		// limit to 5 LLVM IR instructions, to balance binary size increase and performance.
 		if !ctx.isPgoCompile() && !ctx.isAfdoCompile() {
-			flags.Local.LdFlags = append(flags.Local.LdFlags,
-				"-Wl,-plugin-opt,-import-instr-limit=5")
-			flags.Local.LdFlags = append(flags.Local.LdFlags,
-				"-Wl,--lto-O3")
 			flags.Local.LdFlags = append(flags.Local.LdFlags,
 				"-Wl,-mllvm,-inline-threshold=600")
 			flags.Local.LdFlags = append(flags.Local.LdFlags,
 				"-Wl,-mllvm,-inlinehint-threshold=750")
 			flags.Local.LdFlags = append(flags.Local.LdFlags,
 				"-Wl,-mllvm,-unroll-threshold=600")
-
+			flags.Local.LdFlags = append(flags.Local.LdFlags,
+					"-Wl,--lto-O3")
 		}
 	}
 	return flags
